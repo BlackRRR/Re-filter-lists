@@ -140,6 +140,7 @@ jobs:
 
         cp $GITHUB_WORKSPACE/sum/output/domains_all.lst $GITHUB_WORKSPACE/domains_all.lst
         cp $GITHUB_WORKSPACE/sum/output/ipsum.lst $GITHUB_WORKSPACE/ipsum.lst
+        touch $GITHUB_WORKSPACE/sum/input/ooni_domains.lst
         cp $GITHUB_WORKSPACE/sum/input/ooni_domains.lst $GITHUB_WORKSPACE/ooni_domains.lst
 
         git config user.name "github-actions[bot]"
