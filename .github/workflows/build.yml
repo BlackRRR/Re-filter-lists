@@ -6,6 +6,11 @@ permissions:
 
 on:
   workflow_dispatch: # Allows manual trigger of the workflow
+  push:
+    branches: [main]
+    paths:
+      - 'community.lst'
+      - 'community_ips.lst'
   schedule:
     - cron: '5 0 */6 * *' # Runs every 6th day at midnight UTC
 
@@ -215,8 +220,7 @@ jobs:
           ./src/sing-box-files/refilter/ruleset-ip-refilter_ipsum.json \
           --title "$RELEASE_NAME" \
           --notes "This is the automatic $RELEASE_NAME creation." \
-          --draft \
-          --prerelease
+          --latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
