@@ -192,18 +192,29 @@ jobs:
           
     - name: Set Release Name and Tag
       run: |
-        # Define the date
+        # Get latest semver tag
+        LATEST_TAG=$(gh release list --limit=50 --json tagName --jq '.[].tagName' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+
+        if [ -z "$LATEST_TAG" ]; then
+          LATEST_TAG="v1.0.0"
+        fi
+
+        # Increment patch version
+        MAJOR=$(echo "$LATEST_TAG" | cut -d. -f1)
+        MINOR=$(echo "$LATEST_TAG" | cut -d. -f2)
+        PATCH=$(echo "$LATEST_TAG" | cut -d. -f3)
+        NEW_PATCH=$((PATCH + 1))
+        TAG_NAME="${MAJOR}.${MINOR}.${NEW_PATCH}"
+
         CURRENT_DATE=$(date +%d-%m-%Y)
-        CURRENT_TAG=$(date +%d%m%Y)
+        RELEASE_NAME="${TAG_NAME} — ${CURRENT_DATE}"
 
-        # Format the release name and tag
-        RELEASE_NAME="Release $CURRENT_DATE"
-        TAG_NAME="${CURRENT_TAG}"
-
-        # Export as environment variables
         echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
         echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+        echo "Releasing as $TAG_NAME (previous: $LATEST_TAG)"
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create Pre-release with gh CLI
       run: |
